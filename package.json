@@ -1,0 +1,53 @@
+{
+  "name": "mainstack-technical-assessment-ajayi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watchAll",
+    "build": "tsc -p .",
+    "seed": "npx ts-node ./src/database/seeders/index.ts",
+    "start": "ts-node-dev src/server.ts",
+    "dev": "cross-env NODE_ENV=development ts-node-dev --watch --respawn ./src/server.ts",
+    "staging": "cross-env NODE_ENV=staging ts-node-dev --watch --respawn ./src/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michaelajayi/mainstack-technical-assessment-ajayi.git"
+  },
+  "keywords": [],
+  "author": "Michael Ajayi O.",
+  "license": "ISC",
+  "description": "Mainstack Technical Assessment by Michael Ajayi O.",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "compression": "^1.7.5",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dayjs": "^1.11.13",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "express-validator": "^7.2.1",
+    "moment": "^2.30.1",
+    "mongodb": "^6.12.0",
+    "mongoose": "^8.9.5",
+    "pino": "^9.6.0",
+    "uuid": "^11.0.5",
+    "winston": "^3.17.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.1",
+    "@types/node": "^22.12.0",
+    "dotenv": "^16.4.7",
+    "faker": "^6.6.6",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3"
+  }
+}
