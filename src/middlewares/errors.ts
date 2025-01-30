@@ -7,6 +7,7 @@ import {
 } from "express";
 
 import { AppError } from "../errors";
+import logger from "../utils/logger";
 
 export const notFoundHandler = (
   req: Request,
@@ -35,7 +36,7 @@ export const errorHandler = (
   }
 
   // Handle unknown errors
-    console.error("Unhandled error:", err);
+    logger.error("Unhandled error:", err);
     return res.status(500).json({
         status: 'error',
         message: 'Internal server error',

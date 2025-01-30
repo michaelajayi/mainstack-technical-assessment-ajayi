@@ -8,6 +8,7 @@ import corsOptions from "./config/corsOptions";
 import connectDB from "./config/db";
 import { errorHandler, notFoundHandler } from "./middlewares/errors";
 import { v1Router } from "./routes";
+import logger from "./utils/logger";
 
 const app: Express = express();
 const port = process.env.port || 8001;
@@ -16,7 +17,7 @@ const port = process.env.port || 8001;
 try {
   connectDB();
 } catch (err) {
-  console.error(err);
+  logger.error(err);
 }
 
 // Middlewares
