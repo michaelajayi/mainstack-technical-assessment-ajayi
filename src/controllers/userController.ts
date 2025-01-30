@@ -11,12 +11,35 @@ export const getAllUsers = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const users = await User.find();
+    const users = await User.find().select("-password");
 
-    if (!users) {
-      return next(new NotFoundError("No users found"));
-    }
+    res.status(200).json(successResponse(users.length ? 'Users retried successfully' : 'No users found', users))
   } catch (err) {
+    logger.error('Get all users error: ', err);
+    next(new NotFoundError(err instanceof Error ? err.message : String(err)));
+  }
+};
+
+export const getSingleUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userId = req.params.id;
+
+    if (!userId) {
+      return next(new NotFoundError("User ID not provided"));
+    }
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return next(new NotFoundError("User not found"));
+    }
+
+    res.status(200).json(successResponse("User retrieved successfully", user));
+  } catch (err) {
+    logger.error(err);
     next(new NotFoundError(err instanceof Error ? err.message : String(err)));
   }
 };

@@ -9,7 +9,7 @@ const authRouter = Router();
 // Login a user
 authRouter.post("/login", validateResource(LoginSchema), login);
 
-// Get logged in user
+// get logged in user
 authRouter.get("/me", auth, getLoggedInUser);
 
 export default authRouter;

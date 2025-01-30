@@ -27,7 +27,7 @@ export const getLoggedInUser = async (
     // Remove sensitive data
     const userResponse = user.toObject();
 
-    res.status(200).json(successResponse("User found", { user: userResponse }));
+    res.status(200).json(successResponse("User retrieved successfully", { user: userResponse }));
   } catch (err) {
     logger.error("Get logged in user error:", err);
     next(new NotFoundError(err instanceof Error ? err.message : String(err)));
