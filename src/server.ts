@@ -6,6 +6,7 @@ import express, { Express, Request, Response } from "express";
 import session, { SessionOptions } from "express-session";
 import corsOptions from "./config/corsOptions";
 import connectDB from "./config/db";
+import { errorHandler, notFoundHandler } from "./middlewares/errors";
 
 const app: Express = express();
 const port = process.env.port || 8001;
@@ -44,6 +45,10 @@ app.get("/", (req: Request, res: Response) => {
 
 // Serve static files from the 'public' folder
 app.use("/public", express.static("public"));
+
+// Error handling
+app.use("*", notFoundHandler);
+app.use(errorHandler as express.ErrorRequestHandler);
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
