@@ -7,6 +7,7 @@ import session, { SessionOptions } from "express-session";
 import corsOptions from "./config/corsOptions";
 import connectDB from "./config/db";
 import { errorHandler, notFoundHandler } from "./middlewares/errors";
+import { v1Router } from "./routes";
 
 const app: Express = express();
 const port = process.env.port || 8001;
@@ -42,6 +43,9 @@ app.use(
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello from Express server with TypeScript!");
 });
+
+// Define routes
+app.use("/api/v1", v1Router);
 
 // Serve static files from the 'public' folder
 app.use("/public", express.static("public"));
