@@ -8,6 +8,7 @@ import {
 
 import { AppError, ValidationError } from "../errors";
 import logger from "../utils/logger";
+import config from "../config";
 
 export const notFoundHandler = (
   req: Request,
@@ -40,7 +41,7 @@ export const errorHandler = (
     return res.status(err.statusCode).json({
       status: "error",
       message,
-      ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+      ...(config.env.isDevelopment && { stack: err.stack }),
     });
   }
 
@@ -49,6 +50,6 @@ export const errorHandler = (
   return res.status(500).json({
     status: "error",
     message: "Internal server error",
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    ...(config.env.isDevelopment && { stack: err.stack }),
   });
 };

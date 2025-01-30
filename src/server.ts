@@ -4,6 +4,7 @@ import cors from "cors";
 import "dotenv/config";
 import express, { Express, Request, Response } from "express";
 import session, { SessionOptions } from "express-session";
+import config from "./config";
 import corsOptions from "./config/corsOptions";
 import connectDB from "./config/db";
 import { errorHandler, notFoundHandler } from "./middlewares/errors";
@@ -11,7 +12,7 @@ import { v1Router } from "./routes";
 import logger from "./utils/logger";
 
 const app: Express = express();
-const port = process.env.port || 8001;
+const port = config.port.app || 8001;
 
 // Connect to MongoDB
 try {
@@ -26,19 +27,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(compression());
 app.use(cookieParser());
-
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET as string,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
-  } as SessionOptions)
-);
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {
