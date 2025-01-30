@@ -6,7 +6,7 @@ import {
   Router,
 } from "express";
 
-import { AppError } from "../errors";
+import { AppError, ValidationError } from "../errors";
 import logger from "../utils/logger";
 
 export const notFoundHandler = (
@@ -28,18 +28,27 @@ export const errorHandler = (
   }
 
   if (err instanceof AppError) {
+    // Parse the validation error message if it's a ValidationError
+    let message = err.message;
+    if (err instanceof ValidationError) {
+      try {
+        message = JSON.parse(err.message);
+      } catch (err) {
+        // If parsing fails, use the message as is
+      }
+    }
     return res.status(err.statusCode).json({
       status: "error",
-      message: err.message,
+      message,
       ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
     });
   }
 
   // Handle unknown errors
-    logger.error("Unhandled error:", err);
-    return res.status(500).json({
-        status: 'error',
-        message: 'Internal server error',
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    })
+  logger.error("Unhandled error:", err);
+  return res.status(500).json({
+    status: "error",
+    message: "Internal server error",
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  });
 };

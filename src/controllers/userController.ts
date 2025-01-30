@@ -1,9 +1,9 @@
+import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
-import { NotFoundError } from "../errors";
+import { ConflictError, NotFoundError } from "../errors";
 import { successResponse } from "../helpers";
 import { User } from "../model/User";
 import logger from "../utils/logger";
-import bcrypt from "bcrypt";
 
 export const getAllUsers = async (
   req: Request,
@@ -14,12 +14,10 @@ export const getAllUsers = async (
     const users = await User.find();
 
     if (!users) {
-      throw new NotFoundError("No users found");
+      return next(new NotFoundError("No users found"));
     }
-
-    res.status(200).json(successResponse("All users", users));
   } catch (err) {
-    throw new NotFoundError(err instanceof Error ? err.message : String(err));
+    next(new NotFoundError(err instanceof Error ? err.message : String(err)));
   }
 };
 
@@ -37,11 +35,8 @@ export const register = async (
     });
 
     if (existingUser) {
-      throw new Error("User with this email already exists");
+      return next(new ConflictError("User with this email already exists"));
     }
-      
-      const salt = await bcrypt.genSalt(10);
-      password = await bcrypt.hash(password, salt);
 
     let user = new User({
       firstName,
@@ -55,6 +50,8 @@ export const register = async (
     res.status(201).json(successResponse("User created", user));
   } catch (err) {
     logger.error(err);
-    throw new NotFoundError(err instanceof Error ? err.message : String(err));
+    return next(
+      new NotFoundError(err instanceof Error ? err.message : String(err))
+    );
   }
 };

@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { getAllUsers, register } from "../controllers/userController";
+import validateResource from "../middlewares/validateResources";
+import { RegisterSchema } from "../validation/user.schema";
 
 const userRouter = Router();
 
@@ -7,6 +9,6 @@ const userRouter = Router();
 userRouter.get("/", getAllUsers);
 
 // Register a user
-userRouter.post("/register", register);
+userRouter.post("/register", validateResource(RegisterSchema), register);
 
 export default userRouter;
