@@ -2,7 +2,7 @@ import { Request } from "express";
 
 export interface TokenPayload {
   user: {
-    id: number;
+    id: number | string;
   };
 }
 
