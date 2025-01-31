@@ -53,7 +53,7 @@ describe("User Controller", () => {
       const response = (mockResponse.json as jest.Mock).mock.calls[0][0];
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(response.status).toBe("success");
-      expect(response.message).toBe("Users retried successfully");
+      expect(response.message).toBe("Users retrieved successfully");
       expect(response.data).toBeInstanceOf(Array);
       expect(response.data[0]).toMatchObject({
         firstName: "Test",

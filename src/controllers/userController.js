@@ -21,7 +21,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const getAllUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield User_1.User.find().select("-password");
-        res.status(200).json((0, helpers_1.successResponse)(users.length ? 'Users retried successfully' : 'No users found', users));
+        res.status(200).json((0, helpers_1.successResponse)(users.length ? 'Users retrieved successfully' : 'No users found', users));
     }
     catch (err) {
         logger_1.default.error('Get all users error: ', err);

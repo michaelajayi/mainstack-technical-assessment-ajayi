@@ -7,13 +7,15 @@ import {
 import validateResource from "../middlewares/validateResources";
 import { RegisterSchema } from "../validation/user.schema";
 
+import auth from "../middlewares/auth";
+
 const userRouter = Router();
 
 // get all users
-userRouter.get("/", getAllUsers);
+userRouter.get("/", auth, getAllUsers);
 
 // get single user
-userRouter.get("/:id", getSingleUser);
+userRouter.get("/:id", auth, getSingleUser);
 
 // register a user
 userRouter.post("/register", validateResource(RegisterSchema), register);

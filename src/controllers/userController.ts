@@ -13,7 +13,7 @@ export const getAllUsers = async (
   try {
     const users = await User.find().select("-password");
 
-    res.status(200).json(successResponse(users.length ? 'Users retried successfully' : 'No users found', users))
+    res.status(200).json(successResponse(users.length ? 'Users retrieved successfully' : 'No users found', users))
   } catch (err) {
     logger.error('Get all users error: ', err);
     next(new NotFoundError(err instanceof Error ? err.message : String(err)));
@@ -52,7 +52,6 @@ export const register = async (
   try {
     let { firstName, lastName, email, password } = req.body;
 
-
     // check if user with email already exists
     let existingUser = await User.findOne({
       email,
@@ -78,7 +77,9 @@ export const register = async (
 
     user = await user.save();
 
-    res.status(201).json(successResponse("User created", user));
+    let newUser = await User.findById(user._id).select("-password");
+
+    res.status(201).json(successResponse("User created", newUser));
   } catch (err) {
     logger.error(err);
     return next(
