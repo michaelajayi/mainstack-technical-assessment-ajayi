@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import { User } from "../../model/User";
@@ -26,22 +25,12 @@ jest.mock("../../utils/logger", () => ({
 }));
 
 describe("Auth Controller", () => {
-  let mockRequest: Partial<Request>;
-  let mockResponse: Partial<Response>;
-  let mockNext: NextFunction;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    mockRequest = {};
-    mockResponse = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-    mockNext = jest.fn();
   });
 
   describe("login", () => {
-    test("should login successfully with correct credentials", async () => {
+    it("should login successfully with correct credentials", async () => {
       // Create a test user
       const hashedPassword = await bcrypt.hash("password123", 10);
       const user = await User.create({
@@ -56,28 +45,21 @@ describe("Auth Controller", () => {
 
       // Mock jwt.sign to return a token
       const mockToken = "mock-jwt-token";
-      (jwt.sign as jest.Mock).mockImplementation((payload, secret, options) => {
-        // Verify the payload structure without strict type checking
-        expect(payload).toHaveProperty("user");
-        expect(payload.user).toHaveProperty("id");
-        // Verify that the ID is either a string or an ObjectId
-        expect(
-          typeof payload.user.id === "string" ||
-            payload.user.id instanceof mongoose.Types.ObjectId
-        ).toBeTruthy();
+      (jwt.sign as jest.Mock).mockReturnValue(mockToken);
 
-        expect(secret).toBe(config.jwt.secret);
-        expect(options).toEqual({ expiresIn: "1h" });
+      const mockRequest = {
+        body: {
+          email: "test@example.com",
+          password: "password123",
+        },
+      } as Request;
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+      const mockNext = jest.fn() as NextFunction;
 
-        return mockToken;
-      });
-
-      mockRequest.body = {
-        email: "test@example.com",
-        password: "password123",
-      };
-
-      await login(mockRequest as Request, mockResponse as Response, mockNext);
+      await login(mockRequest, mockResponse, mockNext);
 
       expect(mockNext).not.toHaveBeenCalled();
       expect(mockResponse.status).toHaveBeenCalledWith(200);
@@ -87,17 +69,28 @@ describe("Auth Controller", () => {
         data: { token: mockToken },
       });
 
-      // Verify that jwt.sign was called exactly once
-      expect(jwt.sign).toHaveBeenCalledTimes(1);
+      // Verify JWT was called with correct parameters
+      expect(jwt.sign).toHaveBeenCalledWith(
+        { user: { id: user._id.toString() } },
+        config.jwt.secret,
+        { expiresIn: "1h" }
+      );
     });
 
-    test("should return error for non-existent user", async () => {
-      mockRequest.body = {
-        email: "nonexistent@example.com",
-        password: "password123",
-      };
+    it("should return error for non-existent user", async () => {
+      const mockRequest = {
+        body: {
+          email: "nonexistent@example.com",
+          password: "password123",
+        },
+      } as Request;
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+      const mockNext = jest.fn() as NextFunction;
 
-      await login(mockRequest as Request, mockResponse as Response, mockNext);
+      await login(mockRequest, mockResponse, mockNext);
 
       expect(mockNext).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -108,7 +101,7 @@ describe("Auth Controller", () => {
       expect(mockResponse.json).not.toHaveBeenCalled();
     });
 
-    test("should return error for incorrect password", async () => {
+    it("should return error for incorrect password", async () => {
       // Create a test user
       const hashedPassword = await bcrypt.hash("password123", 10);
       await User.create({
@@ -121,12 +114,19 @@ describe("Auth Controller", () => {
       // Mock bcrypt.compare to return false
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      mockRequest.body = {
-        email: "test@example.com",
-        password: "wrongpassword",
-      };
+      const mockRequest = {
+        body: {
+          email: "test@example.com",
+          password: "wrongpassword",
+        },
+      } as Request;
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+      const mockNext = jest.fn() as NextFunction;
 
-      await login(mockRequest as Request, mockResponse as Response, mockNext);
+      await login(mockRequest, mockResponse, mockNext);
 
       expect(mockNext).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -139,7 +139,7 @@ describe("Auth Controller", () => {
   });
 
   describe("getLoggedInUser", () => {
-    test("should return user data for authenticated user", async () => {
+    it("should return user data for authenticated user", async () => {
       // Create a test user
       const user = await User.create({
         firstName: "Test",
@@ -148,11 +148,16 @@ describe("Auth Controller", () => {
         password: "hashedPassword",
       });
 
-      const customRequest = {
+      const mockRequest = {
         user: { id: user._id.toString() },
       } as CustomRequest;
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+      const mockNext = jest.fn() as NextFunction;
 
-      await getLoggedInUser(customRequest, mockResponse as Response, mockNext);
+      await getLoggedInUser(mockRequest, mockResponse, mockNext);
 
       expect(mockNext).not.toHaveBeenCalled();
       expect(mockResponse.status).toHaveBeenCalledWith(200);
@@ -167,34 +172,51 @@ describe("Auth Controller", () => {
           }),
         },
       });
+      // Verify password is not included
+      const responseData = (mockResponse.json as jest.Mock).mock.calls[0][0].data.user;
+      expect(responseData.password).toBeUndefined();
     });
 
-    test("should return error when user is not authenticated", async () => {
-      const customRequest = {
+    it("should return error when user is not authenticated", async () => {
+      const mockRequest = {
         user: null,
       } as unknown as CustomRequest;
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+      const mockNext = jest.fn() as NextFunction;
 
-      await getLoggedInUser(customRequest, mockResponse as Response, mockNext);
+      await getLoggedInUser(mockRequest, mockResponse, mockNext);
 
       expect(mockNext).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "Not authenticated",
         })
       );
+      expect(mockResponse.status).not.toHaveBeenCalled();
+      expect(mockResponse.json).not.toHaveBeenCalled();
     });
 
-    test("should return error when user ID is invalid", async () => {
-      const customRequest = {
+    it("should return error when user ID is invalid", async () => {
+      const mockRequest = {
         user: { id: new mongoose.Types.ObjectId().toString() },
       } as CustomRequest;
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+      const mockNext = jest.fn() as NextFunction;
 
-      await getLoggedInUser(customRequest, mockResponse as Response, mockNext);
+      await getLoggedInUser(mockRequest, mockResponse, mockNext);
 
       expect(mockNext).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "User not found",
         })
       );
+      expect(mockResponse.status).not.toHaveBeenCalled();
+      expect(mockResponse.json).not.toHaveBeenCalled();
     });
   });
 });
