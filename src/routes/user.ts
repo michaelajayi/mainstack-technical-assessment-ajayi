@@ -9,7 +9,6 @@ import { RegisterSchema } from "../validation/user.schema";
 
 const userRouter = Router();
 
-
 // get all users
 userRouter.get("/", getAllUsers);
 
@@ -18,6 +17,5 @@ userRouter.get("/:id", getSingleUser);
 
 // register a user
 userRouter.post("/register", validateResource(RegisterSchema), register);
-
 
 export default userRouter;

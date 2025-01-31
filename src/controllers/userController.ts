@@ -1,9 +1,9 @@
-import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import { ConflictError, NotFoundError } from "../errors";
 import { successResponse } from "../helpers";
 import { User } from "../model/User";
 import logger from "../utils/logger";
+import bcrypt from 'bcrypt';
 
 export const getAllUsers = async (
   req: Request,
@@ -52,6 +52,7 @@ export const register = async (
   try {
     let { firstName, lastName, email, password } = req.body;
 
+
     // check if user with email already exists
     let existingUser = await User.findOne({
       email,
@@ -61,12 +62,19 @@ export const register = async (
       return next(new ConflictError("User with this email already exists"));
     }
 
+   
+    const salt = await bcrypt.genSalt(10);
+
+    password = await bcrypt.hash(password, salt);
+     
     let user = new User({
-      firstName,
-      lastName,
-      email,
-      password,
-    });
+       firstName,
+       lastName,
+       email,
+       password,
+     });
+
+
 
     user = await user.save();
 

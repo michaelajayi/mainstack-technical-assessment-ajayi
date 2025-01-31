@@ -31,7 +31,7 @@ app.use(cookieParser());
 // Basic route
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello from Express server with TypeScript!");
-});
+});``
 
 // Define routes
 app.use("/api/v1", v1Router);

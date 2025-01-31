@@ -64,7 +64,7 @@ const ProductSchema = new mongoose.Schema(
       },
       status: {
         type: String,
-        enum: ["in_stock", "out_of_stock", "expired", "damaged", , "returned"],
+        enum: ["in_stock", "out_of_stock", "expired", "damaged", "returned"],
         default: "out_of_stock",
       },
     },
@@ -94,6 +94,7 @@ const ProductSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    collection: "products",
   }
 );
 
@@ -119,4 +120,4 @@ ProductSchema.pre("save", function (next) {
   next();
 });
 
-export const Product = mongoose.model("product", ProductSchema);
+export const Product = mongoose.model("Product", ProductSchema);
