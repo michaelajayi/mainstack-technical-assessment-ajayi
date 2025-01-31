@@ -1,4 +1,3 @@
-
 # Use the official Node.js image as the base image
 FROM node:14
 
@@ -10,6 +9,9 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
+
+# Ensure the public directory exists
+RUN mkdir -p public
 
 # Copy the rest of the application code
 COPY . .
