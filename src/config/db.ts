@@ -11,7 +11,7 @@ const connectDB = async (): Promise<void> => {
     }
 
     await mongoose.connect(mongo_uri, {
-      directConnection: true,
+      // directConnection: true,
     });
 
     logger.info("MongoDB Connected...");
