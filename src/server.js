@@ -31,7 +31,7 @@ app.use((0, compression_1.default)());
 app.use((0, cookie_parser_1.default)());
 // Basic route
 app.get("/", (req, res) => {
-    res.send("Hello from Express server with TypeScript!");
+    res.send("Mainstack Products Backend - Michael Ajayi O.");
 });
 ``;
 // Define routes
