@@ -232,7 +232,7 @@ export const updateInventory = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const { quantity, lowStockThreshold } = req.body;
+    const { quantity, lowStockThreshold, status } = req.body;
 
     if (!id) {
       return next(new NotFoundError("Product ID not provided"));
@@ -249,32 +249,24 @@ export const updateInventory = async (
       if (quantity !== undefined) product.inventory.quantity = quantity;
       if (lowStockThreshold)
         product.inventory.lowStockThreshold = lowStockThreshold;
-      const validStatuses = [
-        "in_stock",
-        "out_of_stock",
-        "expired",
-        "damaged",
-        "returned",
-      ];
-      if (status && validStatuses.includes(status)) {
-        product.inventory.status = status as
-          | "in_stock"
-          | "out_of_stock"
-          | "expired"
-          | "damaged"
-          | "returned";
-      }
+
+      await product.save();
+
+      res
+        .status(200)
+        .json(
+          successResponse("Product inventory updated successfully", product)
+        );
     } else {
       logger.error("Product inventory not found");
       return next(new NotFoundError("Product inventory not found"));
     }
-
-    await product.save();
-
-    res
-      .status(200)
-      .json(successResponse("Product inventory updated successfully", product));
-  } catch (err) {}
+  } catch (err) {
+    logger.error("Update inventory error: ", err);
+    return next(
+      new NotFoundError(err instanceof Error ? err.message : String(err))
+    );
+  }
 };
 
 export const deleteProduct = async (
