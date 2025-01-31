@@ -22,7 +22,7 @@ const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
             throw new Error("MONGO_URI is not defined in .env");
         }
         yield mongoose_1.default.connect(mongo_uri, {
-            directConnection: true,
+            // directConnection: true,
         });
         logger_1.default.info("MongoDB Connected...");
     }
