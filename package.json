@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watchAll",
-    "build": "tsc -p .",
+    "build": "tsc -p . && mkdir -p public",
     "seed": "npx ts-node ./src/database/seeders/index.ts",
     "start": "ts-node-dev src/server.ts",
     "dev": "cross-env NODE_ENV=development ts-node-dev --watch --respawn ./src/server.ts",
@@ -60,17 +60,5 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
-  },
-  "builds": [
-    {
-      "src": "src/server.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "src/server.ts"
-    }
-  ]
+  }
 }
